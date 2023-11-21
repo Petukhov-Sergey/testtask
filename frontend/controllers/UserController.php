@@ -4,11 +4,26 @@ namespace frontend\controllers;
 use common\models\LoginForm;
 use common\models\User;
 use Yii;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
 class UserController extends Controller
 {
-    public function actionLogin()
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'login' => ['post'],
+                    'register' => ['post'],
+                ],
+            ],
+
+        ];
+    }
+    public function actionLogin(): array
     {
         $params = Yii::$app->request->getBodyParams();
         $email = $params['email'];

@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use Yii;
+
 /**
  * This is the model class for table "post".
  *
@@ -12,59 +14,46 @@ namespace common\models;
  *
  * @property User $author
  */
-class Post extends \yii\db\ActiveRecord
+class Post extends BasePost
 {
     /**
      * @var mixed|null
      */
+    public $accessToken;
 
-    /**
-     * @var array|mixed|object|null
-     */
-    public $text;
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
+    public function createPost(): array
     {
-        return 'post';
+        $user = User::findIdentityByAccessToken($this->accessToken);
+        $this->authorId = $user->id;
+        if ($user) {
+            if ($this->save()) {
+                return ['success' => true, 'message' => 'Post published successfully'];
+            } else {
+                Yii::$app->response->statusCode = 400; // Устанавливаем статус код 400 для ошибки
+                return ['error' => 'Failed to publish post'];
+            }
+        } else {
+            Yii::$app->response->statusCode = 401; // Устанавливаем статус код 401 для ошибки авторизации
+            return ['error' => 'Unauthorized'];
+        }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
+    public function SerializePost()
     {
-        return [
-            [['authorId'], 'required'],
-            [['authorId'], 'integer'],
-            [['body'], 'string'],
-            [['title'], 'string', 'max' => 255],
-            [['authorId'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['authorId' => 'id']],
-        ];
+        $user = User::findIdentityByAccessToken($this->accessToken);
+        $this->authorId = $user->id;
+        if ($user) {
+            if ($this->save()) {
+                return ['success' => true, 'message' => 'Post published successfully'];
+            } else {
+                Yii::$app->response->statusCode = 400; // Устанавливаем статус код 400 для ошибки
+                return ['error' => 'Failed to publish post'];
+            }
+        } else {
+            Yii::$app->response->statusCode = 401; // Устанавливаем статус код 401 для ошибки авторизации
+            return ['error' => 'Unauthorized'];
+        }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'authorId' => 'Author ID',
-            'title' => 'Title',
-            'body' => 'Body',
-        ];
-    }
 
-    /**
-     * Gets query for [[Author]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAuthor()
-    {
-        return $this->hasOne(User::class, ['id' => 'authorId']);
-    }
 }

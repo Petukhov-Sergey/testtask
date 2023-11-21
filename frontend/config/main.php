@@ -39,14 +39,11 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-//        'urlManager' => [
-//            'enablePrettyUrl' => true,
-//            'enableStrictParsing' => true,
-//            'showScriptName' => false,
-//            'rules' => [
-//                'auth/login' => 'auth/login',
-//            ],
-//        ],
+            'urlManager' => [
+                'enablePrettyUrl' => true,
+                'enableStrictParsing' => false,
+                'showScriptName' => false,
+            ],
     ],
     'params' => $params,
 ];

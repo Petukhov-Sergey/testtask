@@ -2,7 +2,7 @@
 
 namespace common\models;
 //
-//use app\models\AccessToken;
+//use app\models\BaseAccessToken;
 //use app\models\Post;
 //use app\models\Role;
 
@@ -21,64 +21,16 @@ namespace common\models;
  * @property string|null $verificationToken
  * @property int $roleId
  *
- * @property AccessToken $accessToken
+ * @property Accesstoken $accessToken
  * @property Post[] $posts
  * @property Role $role
  */
-class User extends \yii\db\ActiveRecord
+class User extends BaseUser
 {
-    /**
-     * @var mixed|string|null
-     */
 
 
     /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'user';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['username', 'authKey', 'passwordHash', 'email', 'createdAt', 'updatedAt', 'roleId'], 'required'],
-            [['status', 'createdAt', 'updatedAt', 'roleId'], 'integer'],
-            [['username', 'passwordHash', 'passwordResetToken', 'email', 'verificationToken'], 'string', 'max' => 255],
-            [['authKey'], 'string', 'max' => 32],
-            [['username'], 'unique'],
-            [['email'], 'unique'],
-            [['passwordResetToken'], 'unique'],
-            [['roleId'], 'exist', 'skipOnError' => true, 'targetClass' => Role::class, 'targetAttribute' => ['roleId' => 'id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'username' => 'Username',
-            'authKey' => 'Auth Key',
-            'passwordHash' => 'Password Hash',
-            'passwordResetToken' => 'Password Reset Token',
-            'email' => 'Email',
-            'status' => 'Status',
-            'createdAt' => 'Created At',
-            'updatedAt' => 'Updated At',
-            'verificationToken' => 'Verification Token',
-            'roleId' => 'Role ID',
-        ];
-    }
-
-    /**
-     * Gets query for [[AccessToken]].
+     * Gets query for [[BaseAccessToken]].
      *
      * @param $email
      * @return User|null
@@ -93,29 +45,5 @@ class User extends \yii\db\ActiveRecord
         return static::find()
             ->andWhere(['accessToken' => $token])
             ->one();
-    }
-    public function getAccessToken()
-    {
-        return $this->hasOne(AccessToken::class, ['userId' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Posts]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPosts()
-    {
-        return $this->hasMany(Post::class, ['authorId' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Role]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getRole()
-    {
-        return $this->hasOne(Role::class, ['id' => 'roleId']);
     }
 }

@@ -3,14 +3,14 @@
 namespace backend\controllers;
 
 use common\models\Post;
-use backend\models\PostSearch;
+use common\models\PostSearch;
 use common\models\User;
 use Yii;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
-use backend\controllers\UserController;
+
 /**
  * PostController implements the CRUD actions for Post model.
  */

@@ -10,46 +10,8 @@ namespace common\models;
  *
  * @property User[] $users
  */
-class Role extends \yii\db\ActiveRecord
+class Role extends BaseRole
 {
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'role';
-    }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['roleName'], 'required'],
-            [['roleName'], 'string', 'max' => 255],
-            [['roleName'], 'unique'],
-        ];
-    }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'roleName' => 'Role Name',
-        ];
-    }
-
-    /**
-     * Gets query for [[Users]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUsers()
-    {
-        return $this->hasMany(User::class, ['roleId' => 'id']);
-    }
 }

@@ -47,9 +47,9 @@ class LoginForm extends Model
                     return false;
                 }
                 $accessToken = Yii::$app->security->generateRandomString();
-                $accessTokenModel = AccessToken::findOne(['userId' => $user->id]);
+                $accessTokenModel = Accesstoken::findOne(['userId' => $user->id]);
                 if ($accessTokenModel === null) {
-                    $accessTokenModel = new AccessToken();
+                    $accessTokenModel = new Accesstoken();
                     $accessTokenModel->userId = $user->id;
                 }
                 $accessTokenModel->accessToken = $accessToken;

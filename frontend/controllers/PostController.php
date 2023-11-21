@@ -3,53 +3,40 @@
 namespace frontend\controllers;
 
 use common\models\Post;
+use common\models\SerializePostForm;
 use common\models\User;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
+use yii\web\Response;
 
 class PostController extends Controller
 {
-    public function actionCreatePost()
+    public function actionCreatePost(): array
     {
         $accessToken = Yii::$app->request->post('accessToken');
         $text = Yii::$app->request->post('text');
         $title = Yii::$app->request->post('title');
 
-        $user = User::findIdentityByAccessToken($accessToken);
-
-        if ($user) {
-            $post = new Post();
-            $post->authorId = $user->id;
-            $post->body = $text;
-            $post->title = $title;
-
-            if ($post->save()) {
-                return ['success' => true, 'message' => 'Post published successfully'];
-            } else {
-                Yii::$app->response->statusCode = 400; // Устанавливаем статус код 400 для ошибки
-                return ['error' => 'Failed to publish post'];
-            }
-        } else {
-            Yii::$app->response->statusCode = 401; // Устанавливаем статус код 401 для ошибки авторизации
-            return ['error' => 'Unauthorized'];
-        }
+        $post = new Post();
+        $post->accessToken = $accessToken;
+        $post->body = $text;
+        $post->title = $title;
+        $message = $post->createPost();
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return $message;
     }
-    public function actionIndex()
+    public function actionIndex(): Response
     {
         $limit = Yii::$app->request->get('limit', 10); // Получаем параметр limit из GET запроса, по умолчанию 10
         $offset = Yii::$app->request->get('offset', 0); // Получаем параметр offset из GET запроса, по умолчанию 0
+        $posts = new SerializePostForm();
+        $posts->limit = $limit;
+        $posts->offset = $offset;
+        return $posts->SerializeAll();
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => Post::find(),
-            'pagination' => [
-                'pageSize' => $limit,
-                'page' => $offset / $limit,
-            ],
-        ]);
-        return $this->asJson($dataProvider->getModels());
     }
-    public function actionUserPosts()
+    public function actionUserPosts(): Response
     {
         // Проверяем валидность access token
         $limit = Yii::$app->request->get('limit', 10); // Получаем параметр limit из GET запроса, по умолчанию 10
