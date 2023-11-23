@@ -14,6 +14,7 @@ return [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
+            'enableCsrfValidation' => false,
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
             ]
@@ -39,11 +40,11 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-            'urlManager' => [
-                'enablePrettyUrl' => true,
-                'enableStrictParsing' => false,
-                'showScriptName' => false,
-            ],
+//            'urlManager' => [
+//                'enablePrettyUrl' => true,
+//                'enableStrictParsing' => false,
+//                'showScriptName' => false,
+//            ],
     ],
     'params' => $params,
 ];

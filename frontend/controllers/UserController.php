@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 use common\models\LoginForm;
+use common\models\RegisterForm;
 use common\models\User;
 use Yii;
 use yii\filters\AccessControl;
@@ -28,14 +29,10 @@ class UserController extends Controller
         $params = Yii::$app->request->getBodyParams();
         $email = $params['email'];
         $password = $params['password'];
-
-
         $model = new LoginForm();
         $model->email = $email;
         $model->password = $password;
-
         $accessToken = $model->login(false); // Вызываем метод login в модели LoginForm
-
         if ($accessToken !== false) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ['accessToken' => $accessToken];
@@ -47,15 +44,13 @@ class UserController extends Controller
     }
     public function actionRegister()
     {
-        $model = new User();
+        $model = new RegisterForm();
+        $model->email = Yii::$app->request->post('email');
+        $model->password = Yii::$app->request->post('password');
+        $model->username = Yii::$app->request->post('username');
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return $model->register();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            // Возвращаем accessToken или ошибку
-            return ['accessToken' => $model->generateAccessToken()];
-        } else {
-            Yii::$app->response->statusCode = 400; // Устанавливаем статус код 400 для ошибки
-            return ['error' => 'Failed to register user'];
-        }
     }
 
 }

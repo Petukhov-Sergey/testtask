@@ -1,10 +1,7 @@
 <?php
 
 namespace common\models;
-//
-//use app\models\BaseAccessToken;
-//use app\models\Post;
-//use app\models\Role;
+use Yii;
 
 /**
  * This is the model class for table "user".
@@ -42,8 +39,12 @@ class User extends BaseUser
 
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return static::find()
-            ->andWhere(['accessToken' => $token])
-            ->one();
+        $accessToken = AccessToken::findOne(['accessToken' => $token]);
+        if ($accessToken) {
+            return static::findOne(['id' => $accessToken->userId]);
+        }
+        return null;
     }
+
+
 }
