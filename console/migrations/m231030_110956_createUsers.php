@@ -1,7 +1,8 @@
 <?php
-use yii\db\Migration;
+
+use common\models\Accesstoken;
 use common\models\User;
-use \common\models\Accesstoken;
+use yii\db\Migration;
 
 /**
 * Class m231030_110956_createUsers

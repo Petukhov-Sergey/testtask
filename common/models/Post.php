@@ -1,9 +1,7 @@
 <?php
 
-namespace frontend\models;
+namespace common\models;
 
-use common\models\BasePost;
-use common\models\User;
 use Yii;
 use yii\validators\RequiredValidator;
 
@@ -53,29 +51,10 @@ class Post extends BasePost
         }
     }
 
-    public function SerializePost()
-    {
-        $user = User::findIdentityByAccessToken($this->accessToken);
-        $this->authorId = $user->id;
-        if ($user) {
-            if ($user->getPosts()) {
-                return $user->getPosts();
-            } else {
-                Yii::$app->response->statusCode = 400; // Устанавливаем статус код 400 для ошибки
-                return ['error' => 'This user has no posts'];
-            }
-        } else {
-            Yii::$app->response->statusCode = 401; // Устанавливаем статус код 401 для ошибки авторизации
-            return ['error' => 'Unauthorized'];
-        }
-    }
-
     public function serializeModelShort()
     {
         $data = [];
-
-        $data['postId'] = $this->postId;
-
+        $data['postId'] = $this->id;
         return $data;
     }
 
@@ -83,8 +62,13 @@ class Post extends BasePost
     {
         $data = $this->serializeModelShort();
 
-        $data['text'] = $this->text;
+        $data['text'] = $this->body;
 
         return $data;
+    }
+
+    public function getComments()
+    {
+        return $this->hasMany(Comment::class, ['postId' => 'id']);
     }
 }

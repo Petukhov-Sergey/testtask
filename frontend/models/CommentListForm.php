@@ -5,10 +5,10 @@ namespace frontend\models;
 use common\models\Comment;
 use common\models\Post;
 use common\models\User;
+use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
-// TODO перенести во frontend
-class SerializeCommentsForm
+class CommentListForm extends Model
 {
     public $limit;
     public $offset;
@@ -18,34 +18,43 @@ class SerializeCommentsForm
      */
     public $accessToken;
 
-    public function SerializeAll()
+    public function rules()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Comment::find(),
-            'pagination' => [
-                'pageSize' => $this->limit,
-                'page' => $this->offset / $this->limit,
-            ],
-        ]);
-        $models = $dataProvider->getModels();
-        return $models;
+        return [
+            [['postId', 'accessToken'], 'integer'],
+            ['limit', 'default', 'value' => \Yii::$app->params['defaultLimit']],
+            ['offset', 'default', 'value' => \Yii::$app->params['defaultOffset']],
+        ];
     }
 
-    public function SerializeByUser()
+    public function ListAllComments()
+    {
+        $data = [];
+        $models =  Comment::find()
+            ->limit($this->limit)
+            ->offset($this->offset);
+        foreach($models->each() as $model){
+            $data[] = $model->serializeModelShort();
+        }
+        return $data;
+    }
+
+    public function ListUserComments()
     {
         $user = User::findIdentityByAccessToken($this->accessToken);
         if ($user !== null) {
-            $dataProvider = new ActiveDataProvider([
-                'query' => Comment::find()->where(['authorId' => $user->id]),
-                'pagination' => [
-                    'pageSize' => $this->limit,
-                    'page' => $this->offset / $this->limit, // Рассчитываем номер страницы на основе offset и limit
-                ],
-            ]);
-            $models = $dataProvider->getModels();
-            if(!empty($models)){
-                return $dataProvider->getModels();}
-            else{
+            $data = [];
+            $models =  Comment::find()
+                        ->where(['authorId' => $user->id])
+                        ->limit($this->limit)
+                        ->offset($this->offset);
+            if($models->exists()){
+                foreach($models->each() as $model){
+                    $data[] = $model->serializeModelShort();
+                }
+                return $data;
+            }
+            else {
                 return ['message' => 'This user does not have any comments'];
             }
         } else {
@@ -53,20 +62,21 @@ class SerializeCommentsForm
         }
     }
 
-    public function SerializeByPost()
+    public function ListPostComments()
     {
         $post = Post::findIdentityById($this->postId);
         if ($post !== null) {
-            $dataProvider = new ActiveDataProvider([
-                'query' => Comment::find()->where(['postId' => $post->id]),
-                'pagination' => [
-                    'pageSize' => $this->limit,
-                    'page' => $this->offset / $this->limit, // Рассчитываем номер страницы на основе offset и limit
-                ],
-            ]);
-            $models = $dataProvider->getModels();
-            if(!empty($models)){
-                return $dataProvider->getModels();}
+            $data = [];
+            $models =  Comment::find()
+                ->where(['postId' => $post->id])
+                ->limit($this->limit)
+                ->offset($this->offset);
+            if($models->exists()){
+                foreach($models->each() as $model){
+                    $data[] = $model->serializeModelShort();
+                }
+                return $data;
+            }
             else{
                 return ['message' => 'This post does not have any comments'];
             }

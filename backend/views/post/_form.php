@@ -4,15 +4,13 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
-/** @var common\models\Post $model */
+/** @var \common\models\Post $model */
 /** @var yii\widgets\ActiveForm $form */
 ?>
 
 <div class="post-form">
 
     <?php $form = ActiveForm::begin(); ?>
-
-    <?= $form->field($model, 'authorId')->textInput() ?>
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 

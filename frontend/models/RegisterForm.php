@@ -1,7 +1,9 @@
 <?php
 
-namespace common\models;
+namespace frontend\models;
 
+use common\models\Accesstoken;
+use common\models\User;
 use Yii;
 use yii\base\Model;
 
@@ -22,6 +24,7 @@ class RegisterForm extends Model
     {
         return [
             [['email', 'password', 'username'], 'required'],
+            [['email', 'password', 'username'], 'string']
         ];
     }
     /**

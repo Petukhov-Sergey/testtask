@@ -1,7 +1,7 @@
 <?php
 
-namespace frontend\models;
-use common\models\BaseUser;
+namespace common\models;
+use Yii;
 use yii\web\IdentityInterface;
 
 /**

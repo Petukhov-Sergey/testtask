@@ -2,13 +2,11 @@
 
 namespace backend\controllers;
 
-use common\models\User;
 use backend\models\UserSearch;
-use Yii;
-use yii\web\Controller;
-use yii\web\ForbiddenHttpException;
-use yii\web\NotFoundHttpException;
+use common\models\User;
 use yii\filters\VerbFilter;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -17,20 +15,7 @@ class UserController extends Controller
 {
     /**
      * @inheritDoc
-     * @throws ForbiddenHttpException
      */
-    public function checkAccess($accessToken)
-    {
-        // Получаем параметр accessToken из запроса
-
-
-        // Проверяем роль пользователя
-        $user = User::findIdentityByAccessToken($accessToken);
-        if ($user !== null && $user->roleId !== 3) {
-            throw new ForbiddenHttpException('You are not allowed to perform this action.');
-        }
-    }
-
     public function behaviors()
     {
         return array_merge(
@@ -50,12 +35,9 @@ class UserController extends Controller
      * Lists all User models.
      *
      * @return string
-     * @throws ForbiddenHttpException
      */
     public function actionIndex()
     {
-        $accessToken = Yii::$app->request->get('accessToken');
-        $this->checkAccess($accessToken);
         $searchModel = new UserSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -82,12 +64,9 @@ class UserController extends Controller
      * Creates a new User model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
-     * @throws ForbiddenHttpException
      */
     public function actionCreate()
     {
-        $accessToken = Yii::$app->request->post('accessToken');
-        $this->checkAccess($accessToken);
         $model = new User();
 
         if ($this->request->isPost) {
@@ -109,12 +88,9 @@ class UserController extends Controller
      * @param int $id ID
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
-     * @throws ForbiddenHttpException
      */
     public function actionUpdate($id)
     {
-        $accessToken = Yii::$app->request->post('accessToken');
-        $this->checkAccess($accessToken);
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
@@ -132,12 +108,9 @@ class UserController extends Controller
      * @param int $id ID
      * @return \yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
-     * @throws ForbiddenHttpException
      */
     public function actionDelete($id)
     {
-        $accessToken = Yii::$app->request->get('accessToken');
-        $this->checkAccess($accessToken);
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

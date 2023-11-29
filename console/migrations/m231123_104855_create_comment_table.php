@@ -12,6 +12,7 @@ class m231123_104855_create_comment_table extends Migration
      */
     public function safeUp()
     {
+        // TODO authorUserId
         $this->createTable('{{%comment}}', [
             'id' => $this->primaryKey(),
             'postId' => $this->integer()->notNull(),

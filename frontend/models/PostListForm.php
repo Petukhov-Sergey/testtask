@@ -8,7 +8,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 // TODO перенести во frontend
-class SerializePostForm extends Model
+class PostListForm extends Model
 {
     public $limit;
     public $offset;
@@ -17,28 +17,27 @@ class SerializePostForm extends Model
     public function rules()
     {
         return [
-            ['limit', 'default' => \Yii::$app->params['defaultLimit']],
+            ['limit', 'default', 'value' => \Yii::$app->params['defaultLimit']],
+            ['offset', 'default', 'value' => \Yii::$app->params['defaultOffset']],
+            [['accessToken'], 'integer'],
         ];
     }
 
-    public function SerializeAll()
-    {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Post::find(),
-            'pagination' => [
-                'pageSize' => $this->limit,
-                'page' => $this->offset / $this->limit,
-            ],
-        ]);
-        $models = $dataProvider->getModels();
-
-       return $models;
-    }
-
-    public function SerializeByUser()
+    public function ListAll()
     {
         $data = [];
+       $models = Post::find()
+           ->limit($this->limit)
+           ->offset($this->offset);
+       foreach($models->each() as $model){
+           $data[] = $model->serializeModelShort();
+       }
+       return $data;
+    }
 
+    public function ListByUser()
+    {
+        $data = [];
         $user = User::findIdentityByAccessToken($this->accessToken);
         if ($user !== null) {
             $models = Post::find()
@@ -49,8 +48,7 @@ class SerializePostForm extends Model
             foreach ($models->each() as $model) {
                 $data[] = $model->serializeModelShort();
             }
-
-            if (!empty($models)) {
+            if ($models->exists()) {
                 return $data;
             } else {
                 return ['message' => 'This user does not have any posts'];

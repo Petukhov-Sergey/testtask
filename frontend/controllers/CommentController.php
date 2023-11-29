@@ -3,9 +3,7 @@
 namespace frontend\controllers;
 
 use common\models\Comment;
-use common\models\Post;
-use common\models\SerializeCommentsForm;
-use common\models\SerializePostForm;
+use frontend\models\CommentListForm;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -28,49 +26,35 @@ class CommentController extends Controller
         ];
     }
     public static function actionCreate(){
-        $accessToken = Yii::$app->request->post('accessToken');
-        $text = Yii::$app->request->post('text');
-        $postId = Yii::$app->request->post('postId');
+
         $comment = new Comment();
-        $comment->accessToken = $accessToken;
-        $comment->body = $text;
-        $comment->postId = $postId;
+        $comment->load(Yii::$app->request->post(), '');
+        $comment->validate();
         $message = $comment->createComment();
         Yii::$app->response->format = Response::FORMAT_JSON;
         return $message;
 
     }
     public static function actionGetByUser(){
-        $limit = Yii::$app->request->get('limit', 10); // Получаем параметр limit из GET запроса, по умолчанию 10
-        $offset = Yii::$app->request->get('offset', 0); // Получаем параметр offset из GET запроса, по умолчанию 0
-        $accessToken = Yii::$app->request->get('accessToken');
-        $posts = new SerializeCommentsForm();
-        $posts->limit = $limit;
-        $posts->offset = $offset;
-        $posts->accessToken = $accessToken;
+        $comments = new CommentListForm();
+        $comments->load(Yii::$app->request->get(), '');
+        $comments->validate();
         Yii::$app->response->format = Response::FORMAT_JSON;
-        return $posts->SerializeByUser();
+        return $comments->ListUserComments();
     }
     public static function actionGetByPost(){
-        $limit = Yii::$app->request->get('limit', 10); // Получаем параметр limit из GET запроса, по умолчанию 10
-        $offset = Yii::$app->request->get('offset', 0); // Получаем параметр offset из GET запроса, по умолчанию 0
-        $postId = Yii::$app->request->get('postId');
-        $posts = new SerializeCommentsForm();
-        $posts->limit = $limit;
-        $posts->offset = $offset;
-        $posts->postId = $postId;
-        //return(json_encode());
+
+        $comments = new CommentListForm();
+        $comments->load(Yii::$app->request->get(), '');
+        $comments->validate();
         Yii::$app->response->format = Response::FORMAT_JSON;
-        return $posts->SerializeByPost();
+        return $comments->ListPostComments();
     }
     public static function actionIndex(){
-        $limit = Yii::$app->request->get('limit', 10); // Получаем параметр limit из GET запроса, по умолчанию 10
-        $offset = Yii::$app->request->get('offset', 0); // Получаем параметр offset из GET запроса, по умолчанию 0
-        $comments = new SerializeCommentsForm();
-        $comments->limit = $limit;
-        $comments->offset = $offset;
+        $comments = new CommentListForm();
+        $comments->load(Yii::$app->request->get(), '');
+        $comments->validate();
         Yii::$app->response->format = Response::FORMAT_JSON;
-        return $comments->SerializeAll();
-
+        return $comments->ListAllComments();
     }
 }

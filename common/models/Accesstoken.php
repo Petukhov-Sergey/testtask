@@ -1,9 +1,6 @@
 <?php
 
-namespace frontend\models;
-
-use common\models\BaseAccessToken;
-use common\models\User;
+namespace common\models;
 
 /**
  * This is the model class for table "accesstoken".

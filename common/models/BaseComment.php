@@ -2,9 +2,6 @@
 
 namespace common\models;
 
-use common\models\Post;
-use common\models\User;
-
 /**
  * This is the model class for table "comment".
  *

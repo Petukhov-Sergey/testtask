@@ -7,7 +7,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 
 /** @var yii\web\View $this */
-/** @var \common\models\PostSearch $searchModel */
+/** @var common\models\PostSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Posts';

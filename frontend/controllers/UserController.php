@@ -1,14 +1,13 @@
 <?php
 
 namespace frontend\controllers;
-use common\models\LoginForm;
-use common\models\RegisterForm;
-use common\models\User;
+use frontend\models\LoginFormApi;
+use frontend\models\RegisterForm;
 use Yii;
-use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
+
 class UserController extends Controller
 {
     public function behaviors()
@@ -26,13 +25,10 @@ class UserController extends Controller
     }
     public function actionLogin(): array
     {
-        $params = Yii::$app->request->getBodyParams();
-        $email = $params['email'];
-        $password = $params['password'];
-        $model = new LoginForm();
-        $model->email = $email;
-        $model->password = $password;
-        $accessToken = $model->login(false); // Вызываем метод login в модели LoginForm
+        $model = new LoginFormApi();
+        $model->load(Yii::$app->request->post(), '');
+        $model->validate();
+        $accessToken = $model->login(); // Вызываем метод login в модели LoginFormApi
         if ($accessToken !== false) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ['accessToken' => $accessToken];
@@ -42,15 +38,12 @@ class UserController extends Controller
             return ['error' => 'Invalid email or password',];
         }
     }
-    public function actionRegister()
+    public function actionRegister(): array
     {
         $model = new RegisterForm();
-        $model->email = Yii::$app->request->post('email');
-        $model->password = Yii::$app->request->post('password');
-        $model->username = Yii::$app->request->post('username');
+        $model->load(Yii::$app->request->post(), '');
         Yii::$app->response->format = Response::FORMAT_JSON;
         return $model->register();
-
     }
 
 }

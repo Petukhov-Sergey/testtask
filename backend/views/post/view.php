@@ -1,10 +1,12 @@
 <?php
 
+use yii\data\ActiveDataProvider;
+use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
-/** @var common\models\Post $model */
+/** @var \common\models\Post $model */
 
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Posts', 'url' => ['index']];
@@ -35,5 +37,19 @@ $this->params['breadcrumbs'][] = $this->title;
             'body:ntext',
         ],
     ]) ?>
+
+    <h1>Comments</h1>
+
+    <?= GridView::widget([
+        'dataProvider' => new ActiveDataProvider([
+            'query' => $model->getComments(),
+        ]),
+        'columns' => [
+            'id',
+            'authorId',
+            'body:text',
+        ],
+    ]) ?>
+
 
 </div>

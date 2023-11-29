@@ -4,11 +4,8 @@ namespace backend\controllers;
 
 use common\models\Post;
 use common\models\PostSearch;
-use common\models\User;
-use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
-use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -70,9 +67,6 @@ class PostController extends Controller
      */
     public function actionCreate()
     {
-        $accessToken = Yii::$app->request->post('accessToken');
-        $this->checkAccess($accessToken);
-
         $model = new Post();
 
         if ($this->request->isPost) {
@@ -94,12 +88,9 @@ class PostController extends Controller
      * @param int $id ID
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
-     * @throws ForbiddenHttpException
      */
     public function actionUpdate($id)
     {
-        $accessToken = Yii::$app->request->post('accessToken');
-        $this->checkAccess($accessToken);
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
@@ -117,13 +108,9 @@ class PostController extends Controller
      * @param int $id ID
      * @return \yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
-     * @throws ForbiddenHttpException
      */
     public function actionDelete($id)
     {
-        $accessToken = Yii::$app->request->post('accessToken');
-        $this->checkAccess($accessToken);
-
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
@@ -144,17 +131,4 @@ class PostController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-
-    /**
-     * @throws ForbiddenHttpException
-     */
-    private function checkAccess($accessToken)
-    {
-        $user = User::findIdentityByAccessToken($accessToken);
-        if ($user !== null && $user->roleId !== 3) {
-            throw new ForbiddenHttpException('You are not allowed to perform this action.');
-        }
-    }
-
-
 }
