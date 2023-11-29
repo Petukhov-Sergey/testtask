@@ -1,9 +1,7 @@
 <?php
 
-namespace frontend\models;
+namespace common\models;
 
-use common\models\BasePost;
-use common\models\User;
 use Yii;
 use yii\validators\RequiredValidator;
 

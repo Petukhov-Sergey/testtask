@@ -1,9 +1,7 @@
 <?php
 
-namespace frontend\models;
+namespace common\models;
 
-use common\models\BaseComment;
-use common\models\User;
 use Yii;
 
 class Comment extends BaseComment

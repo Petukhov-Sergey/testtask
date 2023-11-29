@@ -1,9 +1,13 @@
 <?php
 
-namespace common\models;
+namespace frontend\models;
 
+use common\models\Comment;
+use common\models\Post;
+use common\models\User;
 use yii\data\ActiveDataProvider;
 
+// TODO перенести во frontend
 class SerializeCommentsForm
 {
     public $limit;
@@ -14,7 +18,8 @@ class SerializeCommentsForm
      */
     public $accessToken;
 
-    public function SerializeAll(){
+    public function SerializeAll()
+    {
         $dataProvider = new ActiveDataProvider([
             'query' => Comment::find(),
             'pagination' => [
@@ -25,7 +30,9 @@ class SerializeCommentsForm
         $models = $dataProvider->getModels();
         return $models;
     }
-    public function SerializeByUser(){
+
+    public function SerializeByUser()
+    {
         $user = User::findIdentityByAccessToken($this->accessToken);
         if ($user !== null) {
             $dataProvider = new ActiveDataProvider([
@@ -46,7 +53,8 @@ class SerializeCommentsForm
         }
     }
 
-    public function SerializeByPost(){
+    public function SerializeByPost()
+    {
         $post = Post::findIdentityById($this->postId);
         if ($post !== null) {
             $dataProvider = new ActiveDataProvider([
